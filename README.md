@@ -23,15 +23,15 @@ Cyberus is a tool to check the generic and sentimental legitimacy of the message
 
 ## 1. Background
 
-Consider a **scenario**, where a person received an  SMS regarding a special offer. Also, email for the embroilment procedure and a notification regarding the pending payments. At first glance, these all seem to be legitimate. Since the deadline for all this stuff is near, thus, the person is biased by the environment and situation and doesn't have enough time to analyze the message. 
+Consider a **scenario**, where a person receives SMS regarding a special offer. Also, an email for the enrollment procedure and a notification regarding the pending payments. At first glance, these all seem to be legitimate. Since the deadline for all this stuff is near, thus, the person is biased by the environment and the situation and doesn't have enough time to analyze the message.
 	
 ## 2. Problem
 
-The person doesn't know the legitimacy of the message and is unsure whether to proceed or not. And wants to find out the legitimacy of the message as quickly as possible, since there is not enough time to analyze it manually, and wants to be comfortable before clicking the message.
+The person doesn't know the legitimacy of the message, unsure whether to proceed or not and wants to find out the legitimacy of the message as quickly as possible. We are trying to help the person to give the risk status and make him comfortable without manual analysis of hundreds of words.
 
 ## 3. Understanding
 
-One of the authentic and genuine methods of decision is to first go through the statistics, it will help us to make an objective decision more rationally. Next, we'll look at statistics before trying to solve the problem.
+One among the authentic and genuine methods for  decision making is to first go through the statistics, it will help us to make more objective decisions. That’s why, we'll look at statistics before even trying to solve the problem.
 
 **Statistics -** Email spam costs businesses $20.5 billion every year. Nearly **85%** of all emails are spam. Nearly **one-third** of all data breaches in 2018 involved phishing. A new phishing site is created on the internet **every 20 seconds**. More than **70%** of phishing emails are opened by their targets. **90%** of security breaches in companies is a result of phishing attacks. Note that phishing attacks are **innocent-looking** emails, pop-ups, ads, and company communications that tempt you to click so they can install spyware, viruses, and other malware on your computer or phone.
 
