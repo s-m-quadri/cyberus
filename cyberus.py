@@ -1,37 +1,83 @@
 
 from generic_model import *
 from generic_spam_text import *
+from generic_spam_url import *
+from banners import *
 
 
-class cyberus (generic_cyberus, generic_spam_text):
+import re
+import os
 
-    def dataset_spam_sms(self):
-        self.dataset.rename(columns={
-            "v1": "label",
-            "v2": "body"
-        }, inplace=True)
 
-    def dataset_spam_mails(self):
-        self.dataset.rename(columns={
-            "text": "body"
-        }, inplace=True)
+def main():
+    cyberus_prompt()
+    return
 
-    DATASET_NAMES = {
-        "spam_sms": dataset_spam_sms,
-        "spam_mails": dataset_spam_mails,
-    }
 
-    def get_cyberus_score(self, text):
-        return self.judge_all(text)
+def cyberus_prompt():
 
-    def __init__(self) -> None:
-        generic_cyberus.__init__(self)
-        generic_spam_text.__init__(self, self.DATASET_NAMES)
+    while True:
+        if os.name == "nt":
+            os.system("cls")
+        else:
+            os.system("clear")
+        print(INTRO_BANNER)
+        print(PROMPT_BANNER)
+        input_text = input(">> ")
+
+        if input_text.lower().strip() == "exit":
+            break
+
+        while True:
+            try:
+                line = input()
+            except EOFError:
+                break
+            else:
+                input_text += f"\n{line}"
+
+        results = get_results(input_text)
+        score = get_cyberus_score(results)
+        if score >= 50:
+            print(INDICATOR_HIGH)
+        elif score > 20:
+            print(INDICATOR_MEDIUM)
+        else:
+            print(INDICATOR_LOW)
+        result_string = f"{score:.2f}% ({results.count(True)} out of {len(results)})."
+        print("  >  Cyberus Risc Score: " + result_string)
+        print(INDICATOR_END)
+
+        input("Press any key to continue...")
+
+
+def get_cyberus_score(results):
+    score = results.count(True)/len(results)*100
+    return round(score, 2)
+
+
+def get_results(input_text: str):
+    urls = get_urls(input_text)
+    results = cyberus_judge_text(input_text)
+    results.extend(cyberus_judge_url(urls))
+    return results
+
+
+def get_urls(input_text: str):
+    return re.findall(r"(?:https|http|ftp)\S*", input_text)
+
+
+def cyberus_judge_text(all_text: str, instance=spam_text()):
+    return instance.judge_all(text=all_text)
+
+
+def cyberus_judge_url(urls: list, instance=spam_url()):
+    result = []
+    for url in urls:
+        for ins_res in instance.judge_all(url):
+            result.append(ins_res)
+    return result
 
 
 if __name__ == "__main__":
-    obj = cyberus()
-    input_text = input("> Enter the text: ")
-    results = obj.get_cyberus_score(input_text)
-    print(f"> Risk found {results.count(True)} out of {len(results)},")
-    print(f" ... or {results.count(True)/len(results)*100}%")
+    main()

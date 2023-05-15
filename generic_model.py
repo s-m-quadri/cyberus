@@ -13,10 +13,14 @@ class cyberus_model:
     store = {}
 
 
-class generic_cyberus:
-    def __init__(self) -> None:
-        self.unpack()
-        self.load_cyberus_model(CYBERUS_MODEL_DIR)
+class cyberus_core:
+    def __init__(self, memory=None) -> None:
+        if memory:
+            self.cyberus_model = cyberus_model()
+            self.cyberus_model.store = memory
+        else:
+            self.unpack()
+            self.load_cyberus_model(CYBERUS_MODEL_DIR)
 
     def unpack(self):
         if os.path.exists(path=DATASET_DIR):
@@ -45,6 +49,10 @@ class generic_cyberus:
     def save_cyberus_model(self):
         pickle.dump(self.cyberus_model.store, open(CYBERUS_MODEL_DIR, "wb"),
                     protocol=pickle.HIGHEST_PROTOCOL)
+        
+        
+    def get_memory(self):
+        return self.cyberus_model.store
 
     def __del__(self):
         if os.path.exists(path=DATASET_DIR):

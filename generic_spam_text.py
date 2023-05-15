@@ -5,24 +5,33 @@ from sklearn import metrics
 import os
 import pandas
 
-DATASET_DIR = os.path.abspath("datasets")
+from generic_model import *
 
 
 class generic_spam_text:
 
-    def __init__(self, database_names: list()) -> None:
+    def __init__(self, database_names: list(), memory=None) -> None:
+        self.memory = cyberus_core(memory)
         self.database_names = database_names
         self.load_text_datasets()
 
     def load_text_datasets(self):
+        """
+        On given object, load all the dataset, whose list is provided 
+        during the initialization of this class
+        """
         for dataset in self.database_names:
+            # Load from CSV file
             self.dataset = pandas.read_csv(
                 os.path.join(DATASET_DIR, dataset + ".csv"))
+            
+            # Cleanup - using the function provided by calling class
+            # and load dataset
             self.database_names[dataset](self)
             self.load_spam_model(dataset)
 
-    def load_spam_model(self, title: str):
-        if self.cyberus_model.store.get(title, None):
+    def load_spam_model(self, model_name: str):
+        if self.memory.cyberus_model.store.get(model_name, None):
             return
 
         # Split Feature as input and labelled output
@@ -59,20 +68,20 @@ class generic_spam_text:
         y_predict = modal.predict(X_test)
         score = metrics.accuracy_score(y_true=y_test, y_pred=y_predict)
         print(
-            f"+ {title.title()} Model created with {score*100:.2f}% accuracy.")
+            f"+ {model_name.title()} Model created with {score*100:.2f}% accuracy.")
 
         # Save the model, to avoid re_calculations
-        self.cyberus_model.store[title] = {
+        self.memory.cyberus_model.store[model_name] = {
             "modal": modal,
             "features": features,
         }
-        self.save_cyberus_model()
+        self.memory.save_cyberus_model()
 
     def judge(self, text: str, dataset_name: str):
         # Tokenize the input
         vectorize = CountVectorizer(
             stop_words='english', strip_accents="ascii", lowercase=True)
-        vectorize.fit(self.cyberus_model.store[dataset_name]["features"])
+        vectorize.fit(self.memory.cyberus_model.store[dataset_name]["features"])
         input_text_dtf = vectorize.transform([text])
 
         # Weight the input
@@ -81,9 +90,37 @@ class generic_spam_text:
         input_text = transformer.transform(input_text_dtf).toarray()
 
         # Predict the output
-        result = self.cyberus_model.store[dataset_name]["modal"].predict(
+        result = self.memory.cyberus_model.store[dataset_name]["modal"].predict(
             input_text)
         return True if result == 1 else False
 
     def judge_all(self, text):
         return [self.judge(text, x) for x in self.database_names]
+    
+    def get_memory(self):
+        return self.memory.cyberus_model.store
+
+
+class spam_text(generic_spam_text):
+
+    def dataset_spam_sms(self):
+        self.dataset.rename(columns={
+            "v1": "label",
+            "v2": "body"
+        }, inplace=True)
+
+    def dataset_spam_mails(self):
+        self.dataset.rename(columns={
+            "text": "body"
+        }, inplace=True)
+
+    TEXT_DATASET_NAMES = {
+        "spam_sms": dataset_spam_sms,
+        "spam_mails": dataset_spam_mails,
+    }
+
+    def __init__(self, memory=None) -> None:
+        super().__init__(self.TEXT_DATASET_NAMES, memory)
+
+    def judge_all(self, text):
+        return super().judge_all(text)
