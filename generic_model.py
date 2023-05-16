@@ -14,13 +14,8 @@ class cyberus_model:
 
 
 class cyberus_core:
-    def __init__(self, memory=None) -> None:
-        if memory:
-            self.cyberus_model = cyberus_model()
-            self.cyberus_model.store = memory
-        else:
-            self.unpack()
-            self.load_cyberus_model(CYBERUS_MODEL_DIR)
+    def __init__(self) -> None:
+        self.load_cyberus_model(CYBERUS_MODEL_DIR)
 
     def unpack(self):
         if os.path.exists(path=DATASET_DIR):
@@ -51,9 +46,6 @@ class cyberus_core:
                     protocol=pickle.HIGHEST_PROTOCOL)
         
         
-    def get_memory(self):
-        return self.cyberus_model.store
-
     def __del__(self):
         if os.path.exists(path=DATASET_DIR):
             shutil.rmtree(DATASET_DIR)

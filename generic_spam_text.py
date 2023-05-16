@@ -10,8 +10,8 @@ from generic_model import *
 
 class generic_spam_text:
 
-    def __init__(self, database_names: list(), memory=None) -> None:
-        self.memory = cyberus_core(memory)
+    def __init__(self, database_names: list()) -> None:
+        self.memory = cyberus_core()
         self.database_names = database_names
         self.load_text_datasets()
 
@@ -20,20 +20,25 @@ class generic_spam_text:
         On given object, load all the dataset, whose list is provided 
         during the initialization of this class
         """
-        for dataset in self.database_names:
+        for model_name in self.database_names:
+            # If given model already exist in the ram,
+            # just ignore whole process
+            if self.memory.cyberus_model.store.get(model_name, None):
+                continue
+            
+            # Unpack the datasets
+            self.memory.unpack()
+            
             # Load from CSV file
             self.dataset = pandas.read_csv(
-                os.path.join(DATASET_DIR, dataset + ".csv"))
+                os.path.join(DATASET_DIR, model_name + ".csv"))
             
             # Cleanup - using the function provided by calling class
             # and load dataset
-            self.database_names[dataset](self)
-            self.load_spam_model(dataset)
+            self.database_names[model_name](self)
+            self.load_spam_model(model_name)
 
     def load_spam_model(self, model_name: str):
-        if self.memory.cyberus_model.store.get(model_name, None):
-            return
-
         # Split Feature as input and labelled output
         X = self.dataset["body"]
         y = self.dataset["label"].map({"spam": 1, "ham": 0})
@@ -119,8 +124,8 @@ class spam_text(generic_spam_text):
         "spam_mails": dataset_spam_mails,
     }
 
-    def __init__(self, memory=None) -> None:
-        super().__init__(self.TEXT_DATASET_NAMES, memory)
+    def __init__(self) -> None:
+        super().__init__(self.TEXT_DATASET_NAMES)
 
     def judge_all(self, text):
         return super().judge_all(text)

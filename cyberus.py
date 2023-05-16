@@ -10,73 +10,84 @@ import os
 
 
 def main():
-    cyberus_prompt()
-    return
-
-
-def cyberus_prompt():
-
+    cyberus_obj = cyberus()
     while True:
+        if not cyberus_obj.start_prompt():
+            break
+        cyberus_obj.process()
+        cyberus_obj.print()
+        input("Press any key to continue...")
+
+
+class cyberus:
+    def __init__(self) -> None:
+        self.spam_text_instance = spam_text()
+        self.spam_url_instance = spam_url()
+        self._cleanup_()
+
+    def _cleanup_(self):
+        self.input_text = ""
+        self.results = []
+
+    def start_prompt(self):
+        # Starting with fresh
+        self._cleanup_()
         if os.name == "nt":
             os.system("cls")
         else:
             os.system("clear")
+
+        # Prompt banner
         print(INTRO_BANNER)
         print(PROMPT_BANNER)
-        input_text = input(">> ")
+        self.input_text = input(">> ")
 
-        if input_text.lower().strip() == "exit":
-            break
+        # More check on first line
+        if self.input_text.lower().strip() == "exit":
+            return False
 
+        # Take multiple lines
         while True:
             try:
                 line = input()
             except EOFError:
-                break
-            else:
-                input_text += f"\n{line}"
+                return True
+            self.input_text += f"\n{line}"
 
-        results = get_results(input_text)
-        score = get_cyberus_score(results)
+    def _judge_text_(self):
+        res = self.spam_text_instance.judge_all(self.input_text)
+        self.results.extend(res)
+
+    def _judge_url_(self):
+        res = []
+        urls = re.findall(r"(?:https|http|ftp)\S*", self.input_text)
+        for url in urls:
+            for ins_res in self.spam_url_instance.judge_all(url):
+                res.append(ins_res)
+        self.results.extend(res)
+
+    def process(self):
+        self._judge_text_()
+        self._judge_url_()
+
+    def get_results(self):
+        return self.results
+
+    def get_score(self):
+        score = self.results.count(True)/len(self.results)*100
+        return round(score, 2)
+
+    def print(self):
+        score = self.get_score()
         if score >= 50:
             print(INDICATOR_HIGH)
         elif score > 20:
             print(INDICATOR_MEDIUM)
         else:
             print(INDICATOR_LOW)
-        result_string = f"{score:.2f}% ({results.count(True)} out of {len(results)})."
+        result_string = f"{score:.2f}% ({self.results.count(True)} out of {len(self.results)})."
         print("  >  Cyberus Risc Score: " + result_string)
         print(INDICATOR_END)
-
-        input("Press any key to continue...")
-
-
-def get_cyberus_score(results):
-    score = results.count(True)/len(results)*100
-    return round(score, 2)
-
-
-def get_results(input_text: str):
-    urls = get_urls(input_text)
-    results = cyberus_judge_text(input_text)
-    results.extend(cyberus_judge_url(urls))
-    return results
-
-
-def get_urls(input_text: str):
-    return re.findall(r"(?:https|http|ftp)\S*", input_text)
-
-
-def cyberus_judge_text(all_text: str, instance=spam_text()):
-    return instance.judge_all(text=all_text)
-
-
-def cyberus_judge_url(urls: list, instance=spam_url()):
-    result = []
-    for url in urls:
-        for ins_res in instance.judge_all(url):
-            result.append(ins_res)
-    return result
 
 
 if __name__ == "__main__":

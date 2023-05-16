@@ -1,6 +1,4 @@
 from sklearn.model_selection import train_test_split
-from sklearn.svm import LinearSVC
-from sklearn.naive_bayes import MultinomialNB
 from sklearn.tree import DecisionTreeClassifier
 from sklearn import metrics
 import os
@@ -11,8 +9,8 @@ from generic_model import *
 
 class generic_spam_url:
 
-    def __init__(self, database_names: list(), memory=None) -> None:
-        self.memory = cyberus_core(memory)
+    def __init__(self, database_names: list()) -> None:
+        self.memory = cyberus_core()
         self.database_names = database_names
         self.load_url_datasets()
 
@@ -22,6 +20,14 @@ class generic_spam_url:
         during the initialization of this class
         """
         for model_name in self.database_names:
+            # If given model already exist in the ram,
+            # just ignore whole process
+            if self.memory.cyberus_model.store.get(model_name, None):
+                continue
+            
+            # Unpack the datasets
+            self.memory.unpack()
+            
             # Load from CSV file
             self.dataset = pandas.read_csv(
                 os.path.join(DATASET_DIR, model_name + ".csv"))
@@ -88,8 +94,9 @@ class generic_spam_url:
                 "TH", "IO", "XYZ", "PE", "BG", "HK", "RS", "LT", "LINK", "PH", "CLUB", "SI", "SITE", "MOBI", "BY", "CAT", "WIKI", "LA", "GA", "CF", "HR",
                 "NG", "JOBS", "ONLINE", "KZ", "UG", "GQ", "AE", "IS", "LV", "PRO", "FM", "TIPS", "MS", "SA", "APP", "LAT", "PK", "WS", "TOP", "PW", "AI",
                 ]
-        for tld in tlds[:7]:
-            add_count_rigorously(f".{tld.lower()}")
+        for tld in tlds:
+            add_count(f".{tld.lower()}")
+            # add_count_rigorously(f".{tld.lower()}")
 
         # Features: special symbols
         other_features = ["/", "?", "=", "&", ":"]
@@ -103,11 +110,6 @@ class generic_spam_url:
             add_length(i, cumulative=False)
 
     def build_model(self, model_name: str):
-        # If given model already exist in the ram,
-        # just ignore whole process
-        if self.memory.cyberus_model.store.get(model_name, None):
-            return
-
         # Pre processing
         self.pre_process_spam_model()
 
@@ -119,7 +121,7 @@ class generic_spam_url:
         X_train, X_test, y_train, y_test = train_test_split(X, y)
 
         # Build Model
-        modal = DecisionTreeClassifier(max_depth=30)
+        modal = DecisionTreeClassifier(max_depth=15)
         modal.fit(X_train, y_train)
 
         # Measure the goodness of model
@@ -145,9 +147,6 @@ class generic_spam_url:
     def judge_all(self, url):
         return [self.judge(url, x) for x in self.database_names]
 
-    def get_memory(self):
-        return self.memory.cyberus_model.store
-
 
 class spam_url(generic_spam_url):
 
@@ -162,8 +161,8 @@ class spam_url(generic_spam_url):
         "malicious_urls": dataset_malicious_urls,
     }
 
-    def __init__(self, memory=None) -> None:
-        super().__init__(self.URL_DATASET_NAMES, memory)
+    def __init__(self) -> None:
+        super().__init__(self.URL_DATASET_NAMES)
 
     def judge_all(self, url):
         return super().judge_all(url)
