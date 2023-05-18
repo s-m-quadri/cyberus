@@ -12,7 +12,7 @@ import os
 def main():
     cyberus_obj = cyberus()
     while True:
-        if not cyberus_obj.start_prompt():
+        if not cyberus_obj.get_input(singleline=False):
             break
         cyberus_obj.process()
         cyberus_obj.print()
@@ -27,20 +27,40 @@ class cyberus:
 
     def _cleanup_(self):
         self.input_text = ""
-        self.results = []
-
-    def start_prompt(self):
-        # Starting with fresh
-        self._cleanup_()
+        # No result can be 0% risky, some risk always involved.
+        # and not result can be 100%, some possibility of safety
+        # is always exist, thus add padding to those values.
+        self.results = [True, False]
+        # Clean output screen
         if os.name == "nt":
             os.system("cls")
         else:
             os.system("clear")
 
+    def get_input(self, singleline=False):
+        if singleline:
+            return self._singleline_prompt_()
+        return self._multiline_prompt_()
+
+    def _singleline_prompt_(self):
+        print(PROMPT_BANNER_SINGLE_LINE)
+        self.input_text = input(">> ")
+
+        # More check on first line
+        if self.input_text.lower().strip() == "exit":
+            return False
+
+        # Indicating that got some useful
+        return True
+
+    def _multiline_prompt_(self):
+        # Starting with fresh
+        self._cleanup_()
+
         # Prompt banner
         print(INTRO_BANNER)
         print(PROMPT_BANNER)
-        self.input_text = input(">> ")
+        self.input_text = input()
 
         # More check on first line
         if self.input_text.lower().strip() == "exit":

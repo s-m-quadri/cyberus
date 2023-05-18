@@ -46,7 +46,8 @@ class generic_spam_url:
                 case 0:
                     def count_function(url): return url.count(token)
                     new_col = self.dataset["url"].apply(count_function)
-                    self.dataset[f"count({token})"] = new_col
+                    new_col = new_col.to_frame(name=f"count({token})")
+                    self.dataset = pandas.concat([self.dataset, new_col], axis=1)
                 case _:
                     def count_function(url: str):
                         counts = 0
@@ -55,7 +56,8 @@ class generic_spam_url:
                             counts = counts + dir.count(token)
                         return counts
                     new_col = self.dataset["url"].apply(count_function)
-                    self.dataset[f"count({token})/({scan_dir})"] = new_col
+                    new_col = new_col.to_frame(name=f"count({token})/({scan_dir})")
+                    self.dataset = pandas.concat([self.dataset, new_col], axis=1)
         def add_count_rigorously(token: str):
             for i in range(6):
                 add_count(token, i)
@@ -68,7 +70,8 @@ class generic_spam_url:
                 case 0:
                     def len_function(url): return len(url)
                     new_col = self.dataset["url"].apply(len_function)
-                    self.dataset[f"len"] = new_col
+                    new_col = new_col.to_frame(name=f"len")
+                    self.dataset = pandas.concat([self.dataset, new_col], axis=1)
                 case _:
                     def len_function(url: str):
                         try:
@@ -78,9 +81,10 @@ class generic_spam_url:
                             return len(dirs[scan_dir])
                         except:
                             return 0
-                    new_col = self.dataset["url"].apply(len_function)
+                    new_col = self.dataset["url"].apply(len_function,)
                     new_col_name = f"{'cml_' if cumulative else ''}len/({scan_dir})"
-                    self.dataset[new_col_name] = new_col
+                    new_col = new_col.to_frame(name=new_col_name)
+                    self.dataset = pandas.concat([self.dataset, new_col], axis=1)
 
         # Features: prefixes for urls
         prefixes_features = ["www.", "http:", "https:", "ftp:"]
@@ -96,7 +100,6 @@ class generic_spam_url:
                 ]
         for tld in tlds:
             add_count(f".{tld.lower()}")
-            # add_count_rigorously(f".{tld.lower()}")
 
         # Features: special symbols
         other_features = ["/", "?", "=", "&", ":"]
