@@ -4,6 +4,11 @@ from sklearn import metrics
 import os
 import pandas
 
+import seaborn
+import matplotlib.pyplot as plt
+import numpy
+
+
 from generic_model import *
 
 
@@ -24,10 +29,10 @@ class generic_spam_url:
             # just ignore whole process
             if self.memory.cyberus_model.store.get(model_name, None):
                 continue
-            
+
             # Unpack the datasets
             self.memory.unpack()
-            
+
             # Load from CSV file
             self.dataset = pandas.read_csv(
                 os.path.join(DATASET_DIR, model_name + ".csv"))
@@ -36,9 +41,9 @@ class generic_spam_url:
             # and load dataset
             self.database_names[model_name](self)
             self.build_model(model_name)
-                    
+
     def pre_process_spam_model(self):
-        # Function: 
+        # Function:
         # Cumulative counts of 'token' for 'scan_dir' directives,
         # i.e. list obtained by splitting url w.r.t '/'
         def add_count(token: str, scan_dir: int = 0):
@@ -47,7 +52,8 @@ class generic_spam_url:
                     def count_function(url): return url.count(token)
                     new_col = self.dataset["url"].apply(count_function)
                     new_col = new_col.to_frame(name=f"count({token})")
-                    self.dataset = pandas.concat([self.dataset, new_col], axis=1)
+                    self.dataset = pandas.concat(
+                        [self.dataset, new_col], axis=1)
                 case _:
                     def count_function(url: str):
                         counts = 0
@@ -56,13 +62,16 @@ class generic_spam_url:
                             counts = counts + dir.count(token)
                         return counts
                     new_col = self.dataset["url"].apply(count_function)
-                    new_col = new_col.to_frame(name=f"count({token})/({scan_dir})")
-                    self.dataset = pandas.concat([self.dataset, new_col], axis=1)
+                    new_col = new_col.to_frame(
+                        name=f"count({token})/({scan_dir})")
+                    self.dataset = pandas.concat(
+                        [self.dataset, new_col], axis=1)
+
         def add_count_rigorously(token: str):
             for i in range(6):
                 add_count(token, i)
-        
-        # Function: 
+
+        # Function:
         # Counts of length for 'scan_dir' directives,
         # (cumulatively or non-cumulatively)
         def add_length(scan_dir: int = 0, cumulative: bool = True):
@@ -71,7 +80,8 @@ class generic_spam_url:
                     def len_function(url): return len(url)
                     new_col = self.dataset["url"].apply(len_function)
                     new_col = new_col.to_frame(name=f"len")
-                    self.dataset = pandas.concat([self.dataset, new_col], axis=1)
+                    self.dataset = pandas.concat(
+                        [self.dataset, new_col], axis=1)
                 case _:
                     def len_function(url: str):
                         try:
@@ -84,7 +94,8 @@ class generic_spam_url:
                     new_col = self.dataset["url"].apply(len_function,)
                     new_col_name = f"{'cml_' if cumulative else ''}len/({scan_dir})"
                     new_col = new_col.to_frame(name=new_col_name)
-                    self.dataset = pandas.concat([self.dataset, new_col], axis=1)
+                    self.dataset = pandas.concat(
+                        [self.dataset, new_col], axis=1)
 
         # Features: prefixes for urls
         prefixes_features = ["www.", "http:", "https:", "ftp:"]
@@ -132,6 +143,16 @@ class generic_spam_url:
         score = metrics.accuracy_score(y_true=y_test, y_pred=y_predict)
         print(
             f"+ {model_name.title()} Model created with {score*100:.2f}% accuracy.")
+        print(metrics.confusion_matrix(y_test, y_predict))
+        # Graphical Representation
+        """
+        cf_matrix = metrics.confusion_matrix(y_test, y_predict)
+        plot_ = seaborn.heatmap(
+            cf_matrix/numpy.sum(cf_matrix), annot=True, fmt='0.2%')
+        plt.show()
+        plot_ = seaborn.countplot(data=self.dataset, x="label")
+        plt.show()
+        """
 
         # Save the model, to avoid re_calculations
         self.memory.cyberus_model.store[model_name] = {
@@ -144,9 +165,10 @@ class generic_spam_url:
         self.dataset = pandas.DataFrame.from_dict({"url": [url]})
         self.pre_process_spam_model()
         X = self.dataset.drop(columns=["url"])
-        result = self.memory.cyberus_model.store[dataset_name]["modal"].predict(X)
+        result = self.memory.cyberus_model.store[dataset_name]["modal"].predict(
+            X)
         return True if result == 1 else False
-    
+
     def judge_all(self, url):
         return [self.judge(url, x) for x in self.database_names]
 

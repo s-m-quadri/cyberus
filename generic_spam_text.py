@@ -4,6 +4,10 @@ from sklearn.svm import LinearSVC
 from sklearn import metrics
 import os
 import pandas
+import seaborn
+import matplotlib.pyplot as plt
+import numpy
+
 
 from generic_model import *
 
@@ -74,7 +78,17 @@ class generic_spam_text:
         score = metrics.accuracy_score(y_true=y_test, y_pred=y_predict)
         print(
             f"+ {model_name.title()} Model created with {score*100:.2f}% accuracy.")
-
+        print(metrics.confusion_matrix(y_test, y_predict))
+        # Graphical Representation
+        """
+        cf_matrix = metrics.confusion_matrix(y_test, y_predict)
+        plot_ = seaborn.heatmap(
+            cf_matrix/numpy.sum(cf_matrix), annot=True, fmt='0.2%')
+        plt.show()
+        plot_ = seaborn.countplot(data=self.dataset, x="label")
+        plt.show()
+        """
+        
         # Save the model, to avoid re_calculations
         self.memory.cyberus_model.store[model_name] = {
             "modal": modal,

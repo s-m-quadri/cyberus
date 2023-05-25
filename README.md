@@ -2,6 +2,11 @@
 
 Cyberus is a tool to check the generic and sentimental legitimacy of the message, and it gives an approximate idea of the risk, based on the dataset, on which it has trained, and some machine learning models for predicting the risk quantitatively.
 
+## Useful Links:
+1. [Official GitHub Repository](https://github.com/s-m-quadri/cyberus)
+2. [Live Demo on Google Colab](https://colab.research.google.com/drive/1J_3JlpL9DHryn6nlHMCr4JqvgNGI21-n?usp=share_link)
+3. [Presentation, poster and even more...](https://drive.google.com/drive/folders/1CEb8xgVjot8ixARXqxRpRWmdF381Sxgp?usp=share_link) 
+
 ## Details
 
 > `Category:` Safety in e-commerce
@@ -15,7 +20,7 @@ Cyberus is a tool to check the generic and sentimental legitimacy of the message
 >
 > `Course:` Machine Learning
 >
-> `Date:` 25th April 2023
+> `Date:` 25th May 2023
 >
 > `Guided by:` Dr. Smita S. Ponde
 
@@ -54,7 +59,7 @@ There are 3-step involved in knowing the working of Cyberus.
 
 	* **Lexical analysis** of body of message
 		
-		Trained on spam mail and sms datasets from Kaggle, using Naive Bayes (Bag-of-words) Machine Learning Model approach with more than 75% estimated accuracy. Following are the links to datasets from Kaggle.
+		Trained on spam mail and sms datasets from Kaggle, using Support Vector Machine Machine Learning Model approach with more than 75% estimated accuracy. Following are the links to datasets from Kaggle.
 		
 		1. https://www.kaggle.com/datasets/uciml/sms-spam-collection-dataset
 		2. https://www.kaggle.com/datasets/venky73/spam-mails-dataset
