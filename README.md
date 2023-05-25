@@ -4,7 +4,7 @@
 
 # Cyberus - measuring risk
 
-Cyberus is a tool to check the generic and sentimental legitimacy of the message, and it gives an approximate idea of the risk, based on the dataset, on which it has trained, and some machine learning models for predicting the risk quantitatively.
+Cyberus is a tool that checks the generic and sentimental legitimacy of a message and provides an approximate idea of the risk based on the dataset on which it has been trained, along with machine learning models for quantitatively predicting the risk.
 
 ## Important Links
 1. [Official GitHub Repository](https://github.com/s-m-quadri/cyberus)
@@ -34,60 +34,59 @@ Cyberus is a tool to check the generic and sentimental legitimacy of the message
 
 ### 1. Background
 
-Consider a **scenario**, where a person receives SMS regarding a special offer. Also, an email for the enrollment procedure and a notification regarding the pending payments. At first glance, these all seem to be legitimate. Since the deadline for all this stuff is near, thus, the person is biased by the environment and the situation and doesn't have enough time to analyze the message.
-	
+Consider a **scenario** where a person receives an SMS regarding a special offer, an email for the enrollment procedure, and a notification regarding pending payments. At first glance, all of these messages appear to be legitimate. However, due to the proximity of the deadline and the individual's limited time, they may be influenced by their environment and the situation, making it difficult to thoroughly analyze the messages.
+
 ### 2. Problem
 
-The person doesn't know the legitimacy of the message, unsure whether to proceed or not and wants to find out the legitimacy of the message as quickly as possible. We are trying to help the person to give the risk status and make him comfortable without manual analysis of hundreds of words.
+The person is uncertain about the legitimacy of the message and unsure whether to proceed or not. They want to quickly determine the legitimacy of the message and seek a risk status to make an informed decision. Our aim is to assist the person by providing a risk assessment that allows them to feel comfortable without the need for manual analysis of lengthy text passages.
 
 ### 3. Understanding
 
-One among the authentic and genuine methods for  decision making is to first go through the statistics, it will help us to make more objective decisions. That’s why, we'll look at statistics before even trying to solve the problem.
+One of the authentic and genuine methods for decision-making is to analyze statistics, as it helps us make more objective decisions. Therefore, before attempting to solve the problem at hand, we will first examine relevant statistics. Here are some notable statistics to consider: 
 
-**Statistics -** Email spam costs businesses $20.5 billion every year. Nearly **85%** of all emails are spam. Nearly **one-third** of all data breaches in 2018 involved phishing. A new phishing site is created on the internet **every 20 seconds**. More than **70%** of phishing emails are opened by their targets. **90%** of security breaches in companies is a result of phishing attacks. Note that phishing attacks are **innocent-looking** emails, pop-ups, ads, and company communications that tempt you to click so they can install spyware, viruses, and other malware on your computer or phone.
+- Email spam costs businesses $20.5 billion every year.
+- Approximately 85% of all emails are classified as spam.
+- Around one-third of all data breaches in 2018 were a result of phishing attacks.
+- A new phishing site is created on the internet every 20 seconds.
+- More than 70% of phishing emails are opened by their targets.
+- Approximately 90% of security breaches in companies occur due to phishing attacks.
 
-Source:
- 
-1. https://dataprot.net/statistics/spam-statistics/ 
-2. https://dataprot.net/statistics/phishing-statistics/
+It is important to note that phishing attacks involve innocent-looking emails, pop-ups, ads, and company communications that lure users into clicking on them, leading to the installation of spyware, viruses, and other malicious software on their devices.
+
+Sources:
+
+1. [Spam Statistics](https://dataprot.net/statistics/spam-statistics/)
+2. [Phishing Statistics](https://dataprot.net/statistics/phishing-statistics/)
 
 ### 4. Solution
 
-We need to somehow recognize the lexical structure of the message, analyze the link embedded in the message and figure out the legitimacy of the message.
- 
-Introducing **Cyberus**, a tool to check the generic and sentimental legitimacy of the message, and gives an approximate idea of the risk, based on the dataset, on which it has trained and the machine learning model.
+We need to accurately recognize the lexical structure of the message, analyze any embedded links, and determine the legitimacy of the message. Introducing **Cyberus**, a tool designed to assess the generic and sentimental legitimacy of messages and provide an approximate risk assessment. Cyberus utilizes a dataset on which it has been trained, along with machine learning models, to analyze messages and determine their level of risk.
 
 ### 5. Working
 
 There are 3-step involved in knowing the working of Cyberus.
 
-1. First we'll **build** two machine learning model, 
+1. First, we will **build** two machine learning models:
 
-	* **Lexical analysis** of body of message
-		
-		Trained on spam mail and sms datasets from Kaggle, using Support Vector Machine Machine Learning Model approach with more than 75% estimated accuracy. Following are the links to datasets from Kaggle.
-		
-		1. https://www.kaggle.com/datasets/uciml/sms-spam-collection-dataset
-		2. https://www.kaggle.com/datasets/venky73/spam-mails-dataset
-		
-	* **URL analysis** for links embedded in the message
+   - The **Lexical analysis** model focuses on the body of the message. It will be trained on spam mail and SMS datasets from Kaggle using the Support Vector Machine (SVM) machine learning model approach. The estimated accuracy of this model is more than 75%. Here are the links to the datasets from Kaggle:
 
-		Trained on malicious URL datasets from Kaggle, using the Decision Tree Machine Learning approach with more than 80% estimated accuracy. Following are the links to the dataset from Kaggle.
+     1. [SMS Spam Collection Dataset](https://www.kaggle.com/datasets/uciml/sms-spam-collection-dataset)
+     2. [Spam Mails Dataset](https://www.kaggle.com/datasets/venky73/spam-mails-dataset)
 
-		1. https://www.kaggle.com/datasets/sid321axn/malicious-urls-dataset
+   - The **URL analysis** model is responsible for analyzing links embedded in the message. It will be trained on malicious URL datasets from Kaggle, utilizing the Decision Tree machine learning approach. The estimated accuracy of this model is more than 80%. Here is the link to the dataset from Kaggle:
 
-2. Take a message from the user as **input**, and split it into
-	
-	* **Body** - i.e. text without links
+     1. [Malicious URLs Dataset](https://www.kaggle.com/datasets/sid321axn/malicious-urls-dataset)
 
-		The body text will be passed through a Lexical analyzer and the Cyberus Risk Status for the body will be calculated quantitatively.
+Please note that the provided links lead to the respective datasets on Kaggle.
 
-	* **URL** - i.e. links embedded inside the message
+2. The system will take a message from the user as **input** and split it into two components:
 
-		The URL will be passed through URL analysis and the Cyberus Risk Status for the URL will be calculated quantitatively.
+   - **Body**: This refers to the text without any embedded links. The body text will undergo lexical analysis using the Lexical analyzer. The Cyberus Risk Status for the body will be calculated quantitatively.
 
-3. Based on Risk Status, Cyberus will take an average with some weight of each Status, and **outputs** Overall Cyberus Risk on the scale with a range from 0 to 100, as the illegitimacy of message, or Cyber Risk Status.
+   - **URL**: This refers to the links embedded within the message. The URL will be subjected to URL analysis. The Cyberus Risk Status for the URL will be calculated quantitatively.
 
-## Disclaimer
+3. Based on the Risk Status obtained from the body and URL analyses, Cyberus will calculate an overall Cyberus Risk. This will involve taking an average of each Risk Status, with some weights assigned to each component. The resulting Overall Cyberus Risk will be provided as an output, ranging from 0 to 100, indicating the level of message illegitimacy or Cyber Risk Status.
 
-Cyberus is under development, the information may not be relevant w.r.t. the final product.
+## Contribution
+
+We welcome contributions to the development of Cyberus. If you would like to contribute to the project, please follow the guidelines outlined in the official documentation or reach out to the development team for more information. Contributions can include but are not limited to bug fixes, feature enhancements, documentation improvements, and feedback on the existing functionalities. By contributing to Cyberus, you can help improve the tool's effectiveness and make a positive impact on its overall development. Together, we can create a robust and reliable tool for checking the legitimacy and risk assessment of messages.
