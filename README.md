@@ -1,40 +1,46 @@
-# Cyberus :anger: risk status
+![Intro](https://github.com/s-m-quadri/cyberus/assets/88645248/e0067c1d-4f90-4cbd-ac93-1065c900cf1c)
+
+<br/>
+
+# Cyberus - measuring risk
 
 Cyberus is a tool to check the generic and sentimental legitimacy of the message, and it gives an approximate idea of the risk, based on the dataset, on which it has trained, and some machine learning models for predicting the risk quantitatively.
 
-## Useful Links:
+## Important Links
 1. [Official GitHub Repository](https://github.com/s-m-quadri/cyberus)
 2. [Live Demo on Google Colab](https://colab.research.google.com/drive/1J_3JlpL9DHryn6nlHMCr4JqvgNGI21-n?usp=share_link)
 3. [Presentation, poster and even more...](https://drive.google.com/drive/folders/1CEb8xgVjot8ixARXqxRpRWmdF381Sxgp?usp=share_link) 
 
-## Details
+## Project Details
 
-> `Category:` Safety in e-commerce
->
-> `Team Members`
-> 1. Shreyash Ravindra Kendre
-> 2. Shaikh Abu Hayyan Muneeb
-> 3. Syed Minnatullah Quadri
->
-> `Class:` TY-CSE-B (B1 Batch)
->
-> `Course:` Machine Learning
->
-> `Date:` 25th May 2023
->
-> `Guided by:` Dr. Smita S. Ponde
+`Category:` Safety in e-commerce
+
+`Team Members`
+1. Shreyash Ravindra Kendre
+2. Shaikh Abu Hayyan Muneeb
+3. Syed Minnatullah Quadri
+
+`Class:` TY-CSE-B (B1 Batch)
+
+`Course:` Machine Learning
+
+`Date:` May 2023
+
+`Guided by:` Dr. Smita S. Ponde
 
 <br/>
 
-## 1. Background
+## Project Description
+
+### 1. Background
 
 Consider a **scenario**, where a person receives SMS regarding a special offer. Also, an email for the enrollment procedure and a notification regarding the pending payments. At first glance, these all seem to be legitimate. Since the deadline for all this stuff is near, thus, the person is biased by the environment and the situation and doesn't have enough time to analyze the message.
 	
-## 2. Problem
+### 2. Problem
 
 The person doesn't know the legitimacy of the message, unsure whether to proceed or not and wants to find out the legitimacy of the message as quickly as possible. We are trying to help the person to give the risk status and make him comfortable without manual analysis of hundreds of words.
 
-## 3. Understanding
+### 3. Understanding
 
 One among the authentic and genuine methods for  decision making is to first go through the statistics, it will help us to make more objective decisions. That’s why, we'll look at statistics before even trying to solve the problem.
 
@@ -45,13 +51,13 @@ Source:
 1. https://dataprot.net/statistics/spam-statistics/ 
 2. https://dataprot.net/statistics/phishing-statistics/
 
-## 4. Solution
+### 4. Solution
 
 We need to somehow recognize the lexical structure of the message, analyze the link embedded in the message and figure out the legitimacy of the message.
  
 Introducing **Cyberus**, a tool to check the generic and sentimental legitimacy of the message, and gives an approximate idea of the risk, based on the dataset, on which it has trained and the machine learning model.
 
-## 5. Working
+### 5. Working
 
 There are 3-step involved in knowing the working of Cyberus.
 
